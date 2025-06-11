@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧮 Kalkulator Matriks Modern</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
+            --dark-gradient: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px rgba(31, 38, 135, 0.37);
+            --shadow-heavy: 0 15px 35px rgba(31, 38, 135, 0.4);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: var(--dark-gradient);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: textGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes textGlow {
+            from { text-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+            to { text-shadow: 0 4px 20px rgba(255,255,255,0.5); }
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .guide-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--accent-gradient);
+            border: none;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .guide-toggle:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
+        }
+
+        .guide-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .guide-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            margin: 20px;
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--glass-border);
+            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .guide-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: var(--secondary-gradient);
+            border: none;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .guide-close:hover {
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            min-height: 600px;
+            gap: 0;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, rgba(79, 172, 254, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            padding: 25px 20px;
+            border-right: 2px solid rgba(79, 172, 254, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .content-area {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.9) 100%);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-gradient);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(31, 38, 135, 0.3);
+        }
+
+        .section h3 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .input-row label {
+            font-weight: 500;
+            min-width: 70px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+        }
+
+        input[type="number"] {
+            padding: 10px 12px;
+            border: 2px solid rgba(79, 172, 254, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+            width: 70px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+            transform: scale(1.05);
+            background: white;
+        }
+
+        .input-separator {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin: 0 2px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            margin: 3px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
+        }
+
+        .btn-warning {
+            background: var(--warning-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(252, 70, 107, 0.3);
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(252, 70, 107, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--secondary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-full {
+            width: 100%;
+            margin: 8px 0;
+        }
+
+        .operation-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .operation-panel:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .operation-category {
+            margin-bottom: 25px;
+        }
+
+        .operation-category h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1em;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(79, 172, 254, 0.2);
+            position: relative;
+        }
+
+        .operation-category h4::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 30%;
+            height: 2px;
+            background: var(--accent-gradient);
+            border-radius: 1px;
+        }
+
+        .operation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .matrices-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .matrix-section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(15px);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matrix-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent-gradient);
+        }
+
+        .matrix-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-heavy);
+        }
+
+        .matrix-section h4 {
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+
+        .matrix {
+            display: grid;
+            gap: 6px;
+            margin: 15px 0;
+            justify-content: center;
+            padding: 15px;
+            background: rgba(79, 172, 254, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(79, 172, 254, 0.1);
+        }
+
+        .matrix input {
+            width: 60px;
+            height: 45px;
+            text-align: center;
+            border: 2px solid rgba(79, 172, 254, 0.2);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'Poppins', sans-serif;
+            background: white;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .matrix input:focus {
+            border-color: #4facfe;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+            transform: scale(1.05);
+        }
+
+        .matrix input:hover {
+            border-color: #4facfe;
+            transform: scale(1.02);
+        }
+
+        .matrix-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .warning-notice {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 87, 34, 0.15) 100%);
+            border: 2px solid rgba(255, 193, 7, 0.4);
+            color: #d68910;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 20px;
+            backdrop-filter: blur(5px);
+            animation: pulse 2s infinite;
+            font-weight: 500;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .result-section {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.1) 0%, rgba(56, 239, 125, 0.1) 100%);
+            border: 2px solid rgba(17, 153, 142, 0.3);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 20px;
+            backdrop-filter: blur(15px);
+            animation: slideInResult 0.5s ease-out;
+        }
+
+        @keyframes slideInResult {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .result-section h4 {
+            color: #0e6655;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .result-matrix {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(17, 153, 142, 0.2);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInMatrix 0.3s ease-in-out;
+        }
+
+        @keyframes fadeInMatrix {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .guide-step {
+            margin-bottom: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.05) 0%, rgba(240, 147, 251, 0.05) 100%);
+            border-left: 4px solid var(--accent-gradient);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .guide-step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.1);
+        }
+
+        .guide-step h4 {
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(79, 172, 254, 0.3);
+            border-radius: 50%;
+            border-top-color: #4facfe;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .matrices-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .guide-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 15px;
+            }
+
+            .container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+        }
+
+        /* Scroll styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-gradient);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Kalkulator Matriks Modern</h1>
+            <p>Ridho Satrio - 411241022</p>
+            <button class="guide-toggle" onclick="toggleGuide()">📖 Panduan</button>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="warning-notice">
+                    ⚠️ Input hanya menerima bilangan bulat (tidak ada koma/desimal)
+                </div>
+
+                <div class="section">
+                    <h3>📐 Pengaturan Matriks</h3>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <label>Matriks A:</label>
+                            <input type="number" id="rowsA" value="2" min="1" max="5">
+                            <span class="input-separator">×</span>
+                            <input type="number" id="colsA" value="2" min="1" max="5">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <label>Matriks B:</label>
+                            <input type="number" id="rowsB" value="2" min="1" max="5">
+                            <span class="input-separator">×</span>
+                            <input type="number" id="colsB" value="2" min="1" max="5">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="generateMatrices()">🔄 Update Matriks</button>
+                </div>
+
+                <div class="section">
+                    <h3>🎯 Pengaturan Acak</h3>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <label>Range:</label>
+                            <input type="number" id="minRandom" value="1" min="-100" max="100">
+                            <span class="input-separator">s/d</span>
+                            <input type="number" id="maxRandom" value="10" min="-100" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>🔢 Nilai Skalar</h3>
+                    <div class="input-group">
+                        <div class="input-row">
+                            <label>Skalar:</label>
+                            <input type="number" id="scalar" value="2" min="-100" max="100">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area">
+                <div class="operation-panel">
+                    <h3>🔧 Panel Operasi</h3>
+                    
+                    <div class="operation-category">
+                        <h4>➕ Operasi Dasar</h4>
+                        <div class="operation-grid">
+                            <button class="btn btn-primary" onclick="performOperation('add')">A + B</button>
+                            <button class="btn btn-primary" onclick="performOperation('subtract')">A - B</button>
+                            <button class="btn btn-primary" onclick="performOperation('multiply')">A × B</button>
+                        </div>
+                    </div>
+
+                    <div class="operation-category">
+                        <h4>✖️ Operasi Skalar</h4>
+                        <div class="operation-grid">
+                            <button class="btn btn-warning" onclick="performOperation('scalarA')">Skalar × A</button>
+                            <button class="btn btn-warning" onclick="performOperation('scalarB')">Skalar × B</button>
+                        </div>
+                    </div>
+
+                    <div class="operation-category">
+                        <h4>🔍 Operasi Lanjutan</h4>
+                        <div class="operation-grid">
+                            <button class="btn btn-info" onclick="performOperation('detA')">Det(A)</button>
+                            <button class="btn btn-info" onclick="performOperation('detB')">Det(B)</button>
+                            <button class="btn btn-info" onclick="performOperation('invA')">A⁻¹</button>
+                            <button class="btn btn-info" onclick="performOperation('invB')">B⁻¹</button>
+                            <button class="btn btn-info" onclick="performOperation('transposeA')">Aᵀ</button>
+                            <button class="btn btn-info" onclick="performOperation('transposeB')">Bᵀ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="matrices-container">
+                    <div class="matrix-section">
+                        <h4>📊 Matriks A</h4>
+                        <div id="matrixA" class="matrix"></div>
+                        <div class="matrix-buttons">
+                            <button class="btn btn-success" onclick="fillRandom('A')">🎲 Isi Acak</button>
+                            <button class="btn btn-danger" onclick="clearMatrix('A')">🗑️ Bersihkan</button>
+                        </div>
+                    </div>
+
+                    <div class="matrix-section">
+                        <h4>📊 Matriks B</h4>
+                        <div id="matrixB" class="matrix"></div>
+                        <div class="matrix-buttons">
+                            <button class="btn btn-success" onclick="fillRandom('B')">🎲 Isi Acak</button>
+                            <button class="btn btn-danger" onclick="clearMatrix('B')">🗑️ Bersihkan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <h4>✨ Hasil Operasi</h4>
+                    <div id="resultText"></div>
+                    <div id="resultMatrix" class="result-matrix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel Panduan Overlay -->
+    <div class="guide-overlay" id="guideOverlay" onclick="hideGuide()">
+        <div class="guide-panel" onclick="event.stopPropagation()">
+            <button class="guide-close" onclick="hideGuide()">×</button>
+            <h2>📚 Panduan Penggunaan Kalkulator Matriks</h2>
+            
+            <div class="guide-step">
+                <h4>🏁 Langkah 1: Pengaturan Awal</h4>
+                <p>• Tentukan ukuran matriks A dan B di panel kiri<br>
+                • Klik "Update Matriks" untuk membuat matriks baru<br>
+                • Maksimal ukuran matriks adalah 5×5</p>
+            </div>
+
+            <div class="guide-step">
+                <h4>📝 Langkah 2: Mengisi Matriks</h4>
+                <p>• <strong>Manual:</strong> Klik setiap kotak dan masukkan angka<br>
+                • <strong>Acak:</strong> Gunakan tombol "Isi Acak" untuk nilai random<br>
+                • <strong>Reset:</strong> Tombol "Bersihkan" untuk mengosongkan matriks</p>
+            </div>
+
+            <div class="guide-step">
+                <h4>⚙️ Langkah 3: Memilih Operasi</h4>
+                <p>• <strong>Operasi Dasar:</strong> Penjumlahan, pengurangan, perkalian<br>
+                • <strong>Operasi Skalar:</strong> Mengalikan matriks dengan angka<br>
+                • <strong>Operasi Lanjutan:</strong> Determinan, invers, transpose</p>
+            </div>
+
+            <div class="guide-step">
+                <h4>🎯 Langkah 4: Melihat Hasil</h4>
+                <p>• Hasil akan muncul di bagian bawah dengan animasi<br>
+                • Untuk matriks: ditampilkan dalam bentuk grid<br>
+                • Untuk angka (determinan): ditampilkan sebagai nilai tunggal</p>
+            </div>
+
+            <div class="guide-step">
+                <h4>⚠️ Aturan Penting</h4>
+                <p>• Input hanya menerima bilangan bulat (tidak ada desimal)<br>
+                • Penjumlahan/pengurangan: matriks harus berukuran sama<br>
+                • Perkalian: kolom A = baris B<br>
+                • Determinan/invers: hanya untuk matriks persegi</p>
+            </div>
+
+            <div class="guide-step">
+                <h4>💡 Tips Penggunaan</h4>
+                <p>• Gunakan range acak untuk eksperimen cepat<br>
+                • Atur nilai skalar sesuai kebutuhan<br>
+                • Coba berbagai ukuran matriks untuk pembelajaran<br>
+                • Periksa syarat operasi sebelum menjalankan</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleGuide() {
+            const overlay = document.getElementById('guideOverlay');
+            overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function hideGuide() {
+            document.getElementById('guideOverlay').style.display = 'none';
+        }
+
+        function generateMatrices() {
+            const rowsA = parseInt(document.getElementById('rowsA').value);
+            const colsA = parseInt(document.getElementById('colsA').value);
+            const rowsB = parseInt(document.getElementById('rowsB').value);
+            const colsB = parseInt(document.getElementById('colsB').value);
+
+            createMatrix('A', rowsA, colsA);
+            createMatrix('B', rowsB, colsB);
+        }
+
+        function createMatrix(name, rows, cols) {
+            const container = document.getElementById('matrix' + name);
+            container.innerHTML = '';
+            container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const input = document.createElement('input');
+                    input.type = 'number';
+                    input.id = `${name}_${i}_${j}`;
+                    input.value = '0';
+                    input.style.animationDelay = `${(i * cols + j) * 0.1}s`;
+                    input.style.animation = 'slideInUp 0.5s ease-out forwards';
+                    container.appendChild(input);
+                }
+            }
+        }
+
+        function getMatrix(name) {
+            const rows = name === 'A' ? parseInt(document.getElementById('rowsA').value) : parseInt(document.getElementById('rowsB').value);
+            const cols = name === 'A' ? parseInt(document.getElementById('colsA').value) : parseInt(document.getElementById('colsB').value);
+            
+            const matrix = [];
+            for (let i = 0; i < rows; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < cols; j++) {
+                    const value = document.getElementById(`${name}_${i}_${j}`).value;
+                    matrix[i][j] = parseInt(value) || 0;
+                }
+            }
+            return matrix;
+        }
+
+        function fillRandom(name) {
+            const rows = name === 'A' ? parseInt(document.getElementById('rowsA').value) : parseInt(document.getElementById('rowsB').value);
+            const cols = name === 'A' ? parseInt(document.getElementById('colsA').value) : parseInt(document.getElementById('colsB').value);
+            const min = parseInt(document.getElementById('minRandom').value);
+            const max = parseInt(document.getElementById('maxRandom').value);
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const randomValue = Math.floor(Math.random() * (max - min + 1)) + min;
+                    const input = document.getElementById(`${name}_${i}_${j}`);
+                    input.value = randomValue;
+                    input.style.animation = 'none';
+                    setTimeout(() => {
+                        input.style.animation = 'pulse 0.5s ease-in-out';
+                    }, (i * cols + j) * 50);
+                }
+            }
+        }
+
+        function clearMatrix(name) {
+            const rows = name === 'A' ? parseInt(document.getElementById('rowsA').value) : parseInt(document.getElementById('rowsB').value);
+            const cols = name === 'A' ? parseInt(document.getElementById('colsA').value) : parseInt(document.getElementById('colsB').value);
+
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    const input = document.getElementById(`${name}_${i}_${j}`);
+                    input.style.animation = 'fadeIn 0.3s ease-out';
+                    input.value = '0';
+                }
+            }
+        }
+
+        function displayResult(title, result) {
+            const resultSection = document.getElementById('resultSection');
+            resultSection.style.display = 'block';
+            resultSection.style.animation = 'slideInResult 0.5s ease-out';
+            
+            document.getElementById('resultText').innerHTML = `<strong>${title}</strong>`;
+            
+            const resultContainer = document.getElementById('resultMatrix');
+            
+            if (typeof result === 'number') {
+                resultContainer.innerHTML = `<div style="font-size: 1.2em; font-weight: bold; text-align: center; padding: 20px; animation: fadeInMatrix 0.3s ease-in-out;">${result}</div>`;
+            } else if (Array.isArray(result)) {
+                const rows = result.length;
+                const cols = result[0].length;
+                
+                resultContainer.innerHTML = '';
+                resultContainer.style.display = 'grid';
+                resultContainer.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+                resultContainer.style.gap = '5px';
+                
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const cell = document.createElement('div');
+                        cell.style.padding = '10px';
+                        cell.style.textAlign = 'center';
+                        cell.style.border = '1px solid rgba(79, 172, 254, 0.3)';
+                        cell.style.borderRadius = '8px';
+                        cell.style.fontWeight = 'bold';
+                        cell.style.background = 'rgba(79, 172, 254, 0.05)';
+                        cell.style.animationDelay = `${(i * cols + j) * 0.05}s`;
+                        cell.style.animation = 'fadeInMatrix 0.3s ease-in-out forwards';
+                        cell.textContent = result[i][j];
+                        resultContainer.appendChild(cell);
+                    }
+                }
+            } else {
+                resultContainer.innerHTML = `<div style="text-align: center; padding: 20px; color: #dc3545; animation: fadeInMatrix 0.3s ease-in-out;">${result}</div>`;
+            }
+        }
+
+        function performOperation(operation) {
+            const matrixA = getMatrix('A');
+            const matrixB = getMatrix('B');
+            const scalar = parseInt(document.getElementById('scalar').value);
+
+            try {
+                let result;
+                let title;
+
+                switch(operation) {
+                    case 'add':
+                        if (matrixA.length !== matrixB.length || matrixA[0].length !== matrixB[0].length) {
+                            throw new Error('Matriks harus memiliki ukuran yang sama untuk penjumlahan');
+                        }
+                        result = addMatrices(matrixA, matrixB);
+                        title = 'A + B';
+                        break;
+                    
+                    case 'subtract':
+                        if (matrixA.length !== matrixB.length || matrixA[0].length !== matrixB[0].length) {
+                            throw new Error('Matriks harus memiliki ukuran yang sama untuk pengurangan');
+                        }
+                        result = subtractMatrices(matrixA, matrixB);
+                        title = 'A - B';
+                        break;
+                    
+                    case 'multiply':
+                        if (matrixA[0].length !== matrixB.length) {
+                            throw new Error('Jumlah kolom matriks A harus sama dengan jumlah baris matriks B');
+                        }
+                        result = multiplyMatrices(matrixA, matrixB);
+                        title = 'A × B';
+                        break;
+                    
+                    case 'scalarA':
+                        result = scalarMultiply(matrixA, scalar);
+                        title = `${scalar} × A`;
+                        break;
+                    
+                    case 'scalarB':
+                        result = scalarMultiply(matrixB, scalar);
+                        title = `${scalar} × B`;
+                        break;
+                    
+                    case 'detA':
+                        if (matrixA.length !== matrixA[0].length) {
+                            throw new Error('Determinan hanya bisa dihitung untuk matriks persegi');
+                        }
+                        result = determinant(matrixA);
+                        title = 'Determinan A';
+                        break;
+                    
+                    case 'detB':
+                        if (matrixB.length !== matrixB[0].length) {
+                            throw new Error('Determinan hanya bisa dihitung untuk matriks persegi');
+                        }
+                        result = determinant(matrixB);
+                        title = 'Determinan B';
+                        break;
+                    
+                    case 'transposeA':
+                        result = transpose(matrixA);
+                        title = 'Transpose A';
+                        break;
+                    
+                    case 'transposeB':
+                        result = transpose(matrixB);
+                        title = 'Transpose B';
+                        break;
+                    
+                    case 'invA':
+                        if (matrixA.length !== matrixA[0].length) {
+                            throw new Error('Invers hanya bisa dihitung untuk matriks persegi');
+                        }
+                        const detA = determinant(matrixA);
+                        if (detA === 0) {
+                            throw new Error('Matriks singular (determinan = 0), tidak memiliki invers');
+                        }
+                        result = inverse(matrixA);
+                        title = 'Invers A';
+                        break;
+                    
+                    case 'invB':
+                        if (matrixB.length !== matrixB[0].length) {
+                            throw new Error('Invers hanya bisa dihitung untuk matriks persegi');
+                        }
+                        const detB = determinant(matrixB);
+                        if (detB === 0) {
+                            throw new Error('Matriks singular (determinan = 0), tidak memiliki invers');
+                        }
+                        result = inverse(matrixB);
+                        title = 'Invers B';
+                        break;
+                }
+
+                displayResult(title, result);
+            } catch (error) {
+                displayResult('Error', error.message);
+            }
+        }
+
+        // Fungsi-fungsi operasi matriks
+        function addMatrices(a, b) {
+            const result = [];
+            for (let i = 0; i < a.length; i++) {
+                result[i] = [];
+                for (let j = 0; j < a[0].length; j++) {
+                    result[i][j] = a[i][j] + b[i][j];
+                }
+            }
+            return result;
+        }
+
+        function subtractMatrices(a, b) {
+            const result = [];
+            for (let i = 0; i < a.length; i++) {
+                result[i] = [];
+                for (let j = 0; j < a[0].length; j++) {
+                    result[i][j] = a[i][j] - b[i][j];
+                }
+            }
+            return result;
+        }
+
+        function multiplyMatrices(a, b) {
+            const result = [];
+            for (let i = 0; i < a.length; i++) {
+                result[i] = [];
+                for (let j = 0; j < b[0].length; j++) {
+                    result[i][j] = 0;
+                    for (let k = 0; k < a[0].length; k++) {
+                        result[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+            return result;
+        }
+
+        function scalarMultiply(matrix, scalar) {
+            const result = [];
+            for (let i = 0; i < matrix.length; i++) {
+                result[i] = [];
+                for (let j = 0; j < matrix[0].length; j++) {
+                    result[i][j] = matrix[i][j] * scalar;
+                }
+            }
+            return result;
+        }
+
+        function transpose(matrix) {
+            const result = [];
+            for (let i = 0; i < matrix[0].length; i++) {
+                result[i] = [];
+                for (let j = 0; j < matrix.length; j++) {
+                    result[i][j] = matrix[j][i];
+                }
+            }
+            return result;
+        }
+
+        function determinant(matrix) {
+            const n = matrix.length;
+            if (n === 1) return matrix[0][0];
+            if (n === 2) return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+            
+            let det = 0;
+            for (let j = 0; j < n; j++) {
+                const minor = [];
+                for (let i = 1; i < n; i++) {
+                    minor[i-1] = [];
+                    for (let k = 0; k < n; k++) {
+                        if (k !== j) {
+                            minor[i-1].push(matrix[i][k]);
+                        }
+                    }
+                }
+                det += Math.pow(-1, j) * matrix[0][j] * determinant(minor);
+            }
+            return det;
+        }
+
+        function inverse(matrix) {
+            const n = matrix.length;
+            const det = determinant(matrix);
+            
+            if (n === 2) {
+                return [
+                    [matrix[1][1] / det, -matrix[0][1] / det],
+                    [-matrix[1][0] / det, matrix[0][0] / det]
+                ];
+            }
+            
+            const adjugate = [];
+            for (let i = 0; i < n; i++) {
+                adjugate[i] = [];
+                for (let j = 0; j < n; j++) {
+                    const minor = [];
+                    for (let k = 0; k < n; k++) {
+                        if (k !== i) {
+                            minor.push([]);
+                            for (let l = 0; l < n; l++) {
+                                if (l !== j) {
+                                    minor[minor.length - 1].push(matrix[k][l]);
+                                }
+                            }
+                        }
+                    }
+                    adjugate[i][j] = Math.pow(-1, i + j) * determinant(minor) / det;
+                }
+            }
+            
+            return transpose(adjugate);
+        }
+
+        // Inisialisasi
+        window.onload = function() {
+            generateMatrices();
+        };
+    </script>
+</body>
+</html>
